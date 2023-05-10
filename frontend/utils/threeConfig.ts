@@ -15,20 +15,21 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 import { PAGE_PADDING } from "./constants";
 
-export let mixer: any;
+import { USDZLoader } from "three-usdz-loader";
+import { USDZInstance } from "three-usdz-loader/lib/USDZInstance";
 
-export function initThree() {
+export let mixer: any;
+// Setup the USDZ loader
+// You may place external dependencies (.wasm / worker files) in a subfolder of the public folder.
+// In this case, pass the path of this folder as an arg to the USDZLoader constructor
+export let loader = new USDZLoader("/wasm");
+export const scene = new THREE.Scene();
+
+export async function initThree() {
   const clock = new THREE.Clock();
 
-  const zeroTrack = new THREE.NumberKeyframeTrack(
-    "mesh_2.morphTargetInfluences",
-    [0, 1],
-    Array.from({ length: 104 }, () => 0)
-  );
-  let zeroClip = new THREE.AnimationClip("blink", -1, [zeroTrack]);
-
-  const container = document.getElementById("skecth-container");
-  // document.body.appendChild(container);
+  // Create a ThreeJs Group in which the loaded USDZ model will be placed
+  // Add the group to the scene
 
   const camera = new THREE.PerspectiveCamera(
     45,
@@ -38,7 +39,8 @@ export function initThree() {
   );
   camera.position.set(-1, 1, 2.5);
 
-  const scene = new THREE.Scene();
+  const container = document.getElementById("skecth-container");
+  // document.body.appendChild(container);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -51,9 +53,12 @@ export function initThree() {
 
   container?.appendChild(renderer.domElement);
 
-  const light = new THREE.PointLight(0xff0000, 5, 10);
-  light.position.set(0, -3, 4);
-  scene.add(light);
+  // console.log(loadedModel.getGroup());
+  // const light = new THREE.PointLight(0xff0000, 5, 10);
+  // light.position.set(0, -3, 4);
+  // scene.add(light);
+
+  // scene.add(group);
 
   const ktx2Loader = new KTX2Loader()
     .setTranscoderPath("/textures/basis/")
@@ -70,11 +75,16 @@ export function initThree() {
       console.log("mesh", mesh);
 
       mixer = new THREE.AnimationMixer(mesh);
+      const zeroTrack = new THREE.NumberKeyframeTrack(
+        "mesh_2.morphTargetInfluences",
+        [0, 1],
+        Array.from({ length: 104 }, () => 0)
+      );
+      let zeroClip = new THREE.AnimationClip("blink", -1, [zeroTrack]);
       mixer.clipAction(zeroClip).play();
-      // GUI
 
       const head = mesh.getObjectByName("mesh_2");
-      const influences = head.morphTargetInfluences;
+      const influences = head?.morphTargetInfluences;
 
       const gui = new GUI();
       gui.close();
@@ -97,7 +107,7 @@ export function initThree() {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.minDistance = 2.5;
-  controls.maxDistance = 5;
+  controls.maxDistance = 100;
   controls.minAzimuthAngle = -Math.PI / 2;
   controls.maxAzimuthAngle = Math.PI / 2;
   controls.maxPolarAngle = Math.PI / 1.8;
