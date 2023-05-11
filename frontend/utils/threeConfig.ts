@@ -36,7 +36,8 @@ export function initThree() {
     1,
     20
   );
-  camera.position.set(-1, 1, 2.5);
+  camera.position.set(-10,2.5,2.5); // Set position like this
+
 
   const scene = new THREE.Scene();
 
@@ -52,7 +53,7 @@ export function initThree() {
   container?.appendChild(renderer.domElement);
 
   const light = new THREE.PointLight(0xff0000, 5, 10);
-  light.position.set(0, -3, 4);
+  light.position.set(-10, -3, 4);
   scene.add(light);
 
   const ktx2Loader = new KTX2Loader()
