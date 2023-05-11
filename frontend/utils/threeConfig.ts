@@ -20,12 +20,12 @@ export let mixer: any;
 export function initThree() {
   const clock = new THREE.Clock();
 
-  // const zeroTrack = new THREE.NumberKeyframeTrack(
-  //   "wizard_face_mesh.morphTargetInfluences",
-  //   [0, 1],
-  //   Array.from({ length: 104 }, () => 0)
-  // );
-  // let zeroClip = new THREE.AnimationClip("blink", -1, [zeroTrack]);
+  const zeroTrack = new THREE.NumberKeyframeTrack(
+    "transfer_character.morphTargetInfluences",
+    [0, 1],
+    Array.from({ length: 104 }, () => 0)
+  );
+  let zeroClip = new THREE.AnimationClip("blink", -1, [zeroTrack]);
 
   const container = document.getElementById("skecth-container");
   // document.body.appendChild(container);
@@ -70,23 +70,23 @@ export function initThree() {
       scene.add(mesh);
       console.log("mesh", mesh);
 
-      // mixer = new THREE.AnimationMixer(mesh);
-      // mixer.clipAction(zeroClip).play();
-      // // GUI
+      mixer = new THREE.AnimationMixer(mesh);
+      mixer.clipAction(zeroClip).play();
+      // GUI
 
-      // // const head = mesh.getObjectByName("wizard_face_mesh");
-      // const influences = head.morphTargetInfluences;
+      const head = mesh.getObjectByName("transfer_character");
+      const influences = head.morphTargetInfluences;
 
-      // const gui = new GUI();
-      // gui.close();
+      const gui = new GUI();
+      gui.close();
 
-      // for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
-      //   console.log(key, value);
-      //   gui
-      //     .add(influences, value, 0, 1, 0.01)
-      //     .name(key.replace("blendShape1.", ""))
-      //     .listen(influences);
-      // }
+      for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
+        console.log(key, value);
+        gui
+          .add(influences, value, 0, 1, 0.01)
+          .name(key.replace("blendShape1.", ""))
+          .listen(influences);
+      }
     });
 
   const environment = new RoomEnvironment();
@@ -102,7 +102,7 @@ export function initThree() {
   controls.minAzimuthAngle = -Math.PI / 2;
   controls.maxAzimuthAngle = Math.PI / 2;
   controls.maxPolarAngle = Math.PI / 1.8;
-  // controls.target.set(0, 0.15, -0.2);
+  controls.target.set(0, 0.15, -0.2);
 
   // const stats = new Stats();
   // container.appendChild(stats.dom);
