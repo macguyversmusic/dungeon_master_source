@@ -20,15 +20,7 @@ export let mixer: any;
 export function initThree() {
   const clock = new THREE.Clock();
 
-  const zeroTrack = new THREE.NumberKeyframeTrack(
-    "transfer_character.morphTargetInfluences",
-    [0, 1],
-    Array.from({ length: 104 }, () => 0)
-  );
-  let zeroClip = new THREE.AnimationClip("blink", -1, [zeroTrack]);
-
   const container = document.getElementById("skecth-container");
-  // document.body.appendChild(container);
 
   const camera = new THREE.PerspectiveCamera(
     45,
@@ -36,8 +28,7 @@ export function initThree() {
     1,
     20
   );
-  camera.position.set(-10,2.5,2.5); // Set position like this
-
+  camera.position.set(-10, 2.5, 2.5);
 
   const scene = new THREE.Scene();
 
@@ -60,34 +51,76 @@ export function initThree() {
     .setTranscoderPath("/textures/basis/")
     .detectSupport(renderer);
 
-  new GLTFLoader()
-    .setKTX2Loader(ktx2Loader)
-    .setMeshoptDecoder(MeshoptDecoder)
-    .load("/scene.glb", (gltf: any) => {
-      console.log("gltf", gltf);
+    new GLTFLoader()
+  .setKTX2Loader(ktx2Loader)
+  .setMeshoptDecoder(MeshoptDecoder)
+  .load("/scene.glb", (gltf) => {
+    console.log("gltf", gltf);
 
-      const mesh = gltf.scene.children[0];
-      scene.add(mesh);
-      console.log("mesh", mesh);
+    const mesh = gltf.scene.children[0];
+    scene.add(mesh);
+    console.log("mesh", mesh);
 
-      mixer = new THREE.AnimationMixer(mesh);
-      mixer.clipAction(zeroClip).play();
-      // GUI
+    let morphTargetMeshes = [];
 
-      const head = mesh.getObjectByName("transfer_character");
-      const influences = head.morphTargetInfluences;
-
+    gltf.scene.traverse((node) => {
+      if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+        morphTargetMeshes.push(node);
+        console.log(node.name)
+      }
+    });
+    
+    for (const morphTargetMesh of morphTargetMeshes) {
+      const influences = morphTargetMesh.morphTargetInfluences;
       const gui = new GUI();
       gui.close();
-
-      for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
+    
+      for (const [key, value] of Object.entries(morphTargetMesh.morphTargetDictionary)) {
         console.log(key, value);
         gui
           .add(influences, value, 0, 1, 0.01)
           .name(key.replace("blendShape1.", ""))
           .listen(influences);
       }
-    });
+    }
+    
+  });
+
+
+  // new GLTFLoader()
+  //   .setKTX2Loader(ktx2Loader)
+  //   .setMeshoptDecoder(MeshoptDecoder)
+  //   .load("/scene.glb", (gltf: any) => {
+  //     console.log("gltf", gltf);
+
+  //     const mesh = gltf.scene.children[0];
+  //     scene.add(mesh);
+  //     console.log("mesh", mesh);
+  //     mixer = new THREE.AnimationMixer(mesh);
+
+  //     // mixer.clipAction(zeroClip).play();
+  //     // GUI
+
+  //     let morphTargetMesh;
+  //     gltf.scene.traverse((node) => {
+  //       if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+  //         morphTargetMesh = node;
+  //       }
+  //     });
+      
+  //           const head = morphTargetMesh;
+  //     const influences = head.morphTargetInfluences;
+  //     const gui = new GUI();
+  //     gui.close();
+
+  //     for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
+  //       console.log(key, value);
+  //       gui
+  //         .add(influences, value, 0, 1, 0.01)
+  //         .name(key.replace("blendShape1.", ""))
+  //         .listen(influences);
+  //     }
+  //   });
 
   const environment = new RoomEnvironment();
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
