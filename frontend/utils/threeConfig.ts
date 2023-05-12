@@ -222,7 +222,7 @@ export function initThree() {
     100
   );
   camera.position.set(0, 0, 1); // Adjust the camera position to see the model
-  
+
 
   const scene = new THREE.Scene();
 
@@ -238,9 +238,15 @@ export function initThree() {
   container?.appendChild(renderer.domElement);
 
 
+  const light = new THREE.PointLight(0xff0000, 5, 10);
+  light.position.set(-10, -3, 4);
+  scene.add(light);
+
+
   const ktx2Loader = new KTX2Loader()
     .setTranscoderPath("/textures/basis/")
     .detectSupport(renderer);
+
 
   let morphTargetMesh; // Declare the morphTargetMesh variable here
   
@@ -291,8 +297,78 @@ export function initThree() {
         }
       } else {
         console.error("Mesh with the provided UUID not found");
+=======
+    new GLTFLoader()
+  .setKTX2Loader(ktx2Loader)
+  .setMeshoptDecoder(MeshoptDecoder)
+  .load("/mocap.glb", (gltf) => {
+    console.log("gltf", gltf);
+
+    const mesh = gltf.scene.children[0];
+    scene.add(mesh);
+    console.log("mesh", mesh);
+
+    let morphTargetMeshes = [];
+
+    gltf.scene.traverse((node) => {
+      if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+        morphTargetMeshes.push(node);
+        console.log(node.name)
       }
     });
+    
+    for (const morphTargetMesh of morphTargetMeshes) {
+      const influences = morphTargetMesh.morphTargetInfluences;
+      const gui = new GUI();
+      gui.close();
+    
+      for (const [key, value] of Object.entries(morphTargetMesh.morphTargetDictionary)) {
+        console.log(key, value);
+        gui
+          .add(influences, value, 0, 1, 0.01)
+          .name(key.replace("blendShape1.", ""))
+          .listen(influences);
+
+      }
+    }
+    
+  });
+
+
+  // new GLTFLoader()
+  //   .setKTX2Loader(ktx2Loader)
+  //   .setMeshoptDecoder(MeshoptDecoder)
+  //   .load("/scene.glb", (gltf: any) => {
+  //     console.log("gltf", gltf);
+
+  //     const mesh = gltf.scene.children[0];
+  //     scene.add(mesh);
+  //     console.log("mesh", mesh);
+  //     mixer = new THREE.AnimationMixer(mesh);
+
+  //     // mixer.clipAction(zeroClip).play();
+  //     // GUI
+
+  //     let morphTargetMesh;
+  //     gltf.scene.traverse((node) => {
+  //       if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+  //         morphTargetMesh = node;
+  //       }
+  //     });
+      
+  //           const head = morphTargetMesh;
+  //     const influences = head.morphTargetInfluences;
+  //     const gui = new GUI();
+  //     gui.close();
+
+  //     for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
+  //       console.log(key, value);
+  //       gui
+  //         .add(influences, value, 0, 1, 0.01)
+  //         .name(key.replace("blendShape1.", ""))
+  //         .listen(influences);
+  //     }
+  //   });
 
   const environment = new RoomEnvironment();
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -300,13 +376,18 @@ export function initThree() {
     scene.background = new THREE.Color(0x222222);
     scene.environment = pmremGenerator.fromScene(environment).texture;
 
+
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.minDistance = 0.0;
     controls.maxDistance = 5;
   
     controls.target.set(0, 0.15, 0); // Set the OrbitControls target to the model at the center (0, 0, 0)
-  
+
+  scene.background = new THREE.Color(0x222222);
+  scene.environment = pmremGenerator.fromScene(environment).texture;
+
+
 
   // const stats = new Stats();
   // container.appendChild(stats.dom);
