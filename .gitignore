@@ -18,3 +18,5 @@ yarn-error.log*
 scene.json
 frontend/public/scene.glb
 frontend/public/scene.glb
+frontend/public/scene.glb
+scene.glb

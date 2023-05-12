@@ -180,16 +180,26 @@
 //   scene.environment = pmremGenerator.fromScene(environment).texture;
 
 import * as THREE from "three";
+// @ts-ignore
+// import Stats from "three/addons/libs/stats.module.js";
+// @ts-ignore
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+// @ts-ignore
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+// @ts-ignore
 import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
+// @ts-ignore
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+// @ts-ignore
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+// @ts-ignore
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 import { PAGE_PADDING } from "./constants";
+
 import { a2fKeys } from "./a2f_blendshapes";
 
 export let mixer: any;
+export let neutralMesh: any;
 
 function logMorphTargetNames(mesh: THREE.Mesh) {
   if (mesh.morphTargetDictionary) {
@@ -211,7 +221,7 @@ export function initThree() {
     0.1,
     100
   );
-  camera.position.set(0, 1, 3); // Adjust the camera position to see the model
+  camera.position.set(0, 0, 1); // Adjust the camera position to see the model
   
 
   const scene = new THREE.Scene();
@@ -241,26 +251,25 @@ export function initThree() {
   new GLTFLoader()
     .setKTX2Loader(ktx2Loader)
     .setMeshoptDecoder(MeshoptDecoder)
-    .load("/scene.glb", (gltf) => {
+    .load("/scene.glb", (gltf: any) => {
       console.log("gltf", gltf);
 
-      let neutralMesh;
-
-      gltf.scene.traverse((node) => {
-        console.log(node)
+      gltf.scene.traverse((node: any) => {
         if (node.isSkinnedMesh && node.name === "neutral") {
           neutralMesh = node;
+          console.log(node)
         }
       });
       
-      // const mesh = gltf.scene.children[0];
-      // scene.add(mesh);
-      // console.log("mesh", mesh);
+      const mesh = gltf.scene.children[0];
+      scene.add(mesh);
+      console.log("mesh", mesh);
 
 
       if (neutralMesh) {
+        // scene.add(neutralMesh)
         const lightx = new THREE.PointLight(0xff0000, 5, 10);
-        light.position.set(-150, -1, 4);
+        light.position.set(-15, -1, 4);
         neutralMesh.add(lightx);
         console.log("neutralMesh", neutralMesh);
         logMorphTargetNames(neutralMesh);
@@ -280,7 +289,6 @@ export function initThree() {
               .listen(influences);
           }
         }
-        scene.add(neutralMesh)
       } else {
         console.error("Mesh with the provided UUID not found");
       }
@@ -294,8 +302,8 @@ export function initThree() {
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.minDistance = 0.5;
-    controls.maxDistance = 10;
+    controls.minDistance = 0.0;
+    controls.maxDistance = 5;
   
     controls.target.set(0, 0.15, 0); // Set the OrbitControls target to the model at the center (0, 0, 0)
   
