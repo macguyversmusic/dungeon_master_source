@@ -1,3 +1,184 @@
+// import * as THREE from "three";
+// // @ts-ignore
+// // import Stats from "three/addons/libs/stats.module.js";
+// // @ts-ignore
+// import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+// // @ts-ignore
+// import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+// // @ts-ignore
+// import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
+// // @ts-ignore
+// import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+// // @ts-ignore
+// import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+// // @ts-ignore
+// import { GUI } from "three/addons/libs/lil-gui.module.min.js";
+// import { PAGE_PADDING } from "./constants";
+
+// export let mixer: any;
+// import { a2fKeys } from "./a2f_blendshapes";
+
+// export function initThree() {
+//   const clock = new THREE.Clock();
+  
+//   for (const blendshapeName of a2fKeys) {
+//     const morphTargetName = blendshapeName;
+//     const value = morphTargetMesh.morphTargetDictionary[morphTargetName];
+  
+//     if (value !== undefined) {
+//       gui
+//         .add(influences, value, 0, 1, 0.01)
+//         .name(morphTargetName)
+//         .listen(influences);
+//     }
+//   }
+  
+//   const container = document.getElementById("skecth-container");
+
+//   const camera = new THREE.PerspectiveCamera(
+//     50,
+//     window.innerWidth / window.innerHeight,
+//     1,
+//     20
+//   );
+//   camera.position.set(0, 1, .25);
+
+//   const scene = new THREE.Scene();
+
+//   const renderer = new THREE.WebGLRenderer({ antialias: true });
+//   renderer.setPixelRatio(window.devicePixelRatio);
+//   renderer.setSize(
+//     window.innerWidth - PAGE_PADDING * 2,
+//     window.innerHeight - PAGE_PADDING - 136
+//   );
+
+//   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+//   container?.appendChild(renderer.domElement);
+
+//   const light = new THREE.PointLight(0xff0000, 5, 10);
+//   light.position.set(-10, -3, 4);
+//   scene.add(light);
+
+//   const ktx2Loader = new KTX2Loader()
+//     .setTranscoderPath("/textures/basis/")
+//     .detectSupport(renderer);
+
+//   new GLTFLoader()
+//     .setKTX2Loader(ktx2Loader)
+//     .setMeshoptDecoder(MeshoptDecoder)
+//     .load("/scene.glb", (gltf) => {
+//       console.log("gltf", gltf);
+  
+//       const mesh = gltf.scene.children[0];
+//       scene.add(mesh);
+//       console.log("mesh", mesh);
+  
+//       let morphTargetMeshes = [];
+  
+//       gltf.scene.traverse((node) => {
+//         if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+//           morphTargetMeshes.push(node);
+//           console.log(node.name);
+//         }
+//       });
+  
+//       for (const morphTargetMesh of morphTargetMeshes) {
+//         const influences = morphTargetMesh.morphTargetInfluences;
+//         const gui = new GUI();
+//         gui.close();
+  
+//         for (const blendshapeName of a2fKeys) {
+//           const morphTargetName = blendshapeName.replace("blendShape1.", "");
+//           const value = morphTargetMesh.morphTargetDictionary[morphTargetName];
+  
+//           if (value !== undefined) {
+//             gui
+//               .add(influences, value, 0, 1, 0.01)
+//               .name(morphTargetName)
+//               .listen(influences);
+//           }
+//         }
+//       }
+//     });
+  
+//   //   new GLTFLoader()
+//   // .setKTX2Loader(ktx2Loader)
+//   // .setMeshoptDecoder(MeshoptDecoder)
+//   // .load("/scene.glb", (gltf) => {
+//   //   console.log("gltf", gltf);
+
+//   //   const mesh = gltf.scene.children[0];
+//   //   scene.add(mesh);
+//   //   console.log("mesh", mesh);
+
+//   //   let morphTargetMeshes = [];
+
+//   //   gltf.scene.traverse((node) => {
+//   //     if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+//   //       morphTargetMeshes.push(node);
+//   //       console.log(node.name)
+//   //     }
+//   //   });
+    
+//   //   for (const morphTargetMesh of morphTargetMeshes) {
+//   //     const influences = morphTargetMesh.morphTargetInfluences;
+//   //     const gui = new GUI();
+//   //     gui.close();
+    
+//   //     for (const [key, value] of Object.entries(morphTargetMesh.morphTargetDictionary)) {
+//   //       console.log(key, value);
+//   //       gui
+//   //         .add(influences, value, 0, 1, 0.01)
+//   //         .name(key.replace("blendShape1.", ""))
+//   //         .listen(influences);
+//   //     }
+//   //   }
+    
+//   // });
+
+
+//   // new GLTFLoader()
+//   //   .setKTX2Loader(ktx2Loader)
+//   //   .setMeshoptDecoder(MeshoptDecoder)
+//   //   .load("/scene.glb", (gltf: any) => {
+//   //     console.log("gltf", gltf);
+
+//   //     const mesh = gltf.scene.children[0];
+//   //     scene.add(mesh);
+//   //     console.log("mesh", mesh);
+//   //     mixer = new THREE.AnimationMixer(mesh);
+
+//   //     // mixer.clipAction(zeroClip).play();
+//   //     // GUI
+
+//   //     let morphTargetMesh;
+//   //     gltf.scene.traverse((node) => {
+//   //       if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+//   //         morphTargetMesh = node;
+//   //       }
+//   //     });
+      
+//   //           const head = morphTargetMesh;
+//   //     const influences = head.morphTargetInfluences;
+//   //     const gui = new GUI();
+//   //     gui.close();
+
+//   //     for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
+//   //       console.log(key, value);
+//   //       gui
+//   //         .add(influences, value, 0, 1, 0.01)
+//   //         .name(key.replace("blendShape1.", ""))
+//   //         .listen(influences);
+//   //     }
+//   //   });
+
+//   const environment = new RoomEnvironment();
+//   const pmremGenerator = new THREE.PMREMGenerator(renderer);
+
+//   scene.background = new THREE.Color(0x222222);
+//   scene.environment = pmremGenerator.fromScene(environment).texture;
+
 import * as THREE from "three";
 // @ts-ignore
 // import Stats from "three/addons/libs/stats.module.js";
@@ -15,32 +196,35 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 import { PAGE_PADDING } from "./constants";
 
-import { USDZLoader } from "three-usdz-loader";
-import { USDZInstance } from "three-usdz-loader/lib/USDZInstance";
+import { a2fKeys } from "./a2f_blendshapes";
 
 export let mixer: any;
-// Setup the USDZ loader
-// You may place external dependencies (.wasm / worker files) in a subfolder of the public folder.
-// In this case, pass the path of this folder as an arg to the USDZLoader constructor
-export let loader = new USDZLoader("/wasm");
-export const scene = new THREE.Scene();
+export let neutralMesh: any;
 
-export async function initThree() {
+function logMorphTargetNames(mesh: THREE.Mesh) {
+  if (mesh.morphTargetDictionary) {
+    console.log("Morph target names in the model:");
+    for (const key in mesh.morphTargetDictionary) {
+      console.log(key);
+    }
+  }
+}
+
+export function initThree() {
   const clock = new THREE.Clock();
 
-  // Create a ThreeJs Group in which the loaded USDZ model will be placed
-  // Add the group to the scene
+  const container = document.getElementById("skecth-container");
 
   const camera = new THREE.PerspectiveCamera(
-    45,
+    50,
     window.innerWidth / window.innerHeight,
-    1,
-    20
+    0.1,
+    100
   );
-  camera.position.set(-1, 1, 2.5);
+  camera.position.set(0, 0, 1); // Adjust the camera position to see the model
 
-  const container = document.getElementById("skecth-container");
-  // document.body.appendChild(container);
+
+  const scene = new THREE.Scene();
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -53,65 +237,157 @@ export async function initThree() {
 
   container?.appendChild(renderer.domElement);
 
-  // console.log(loadedModel.getGroup());
-  // const light = new THREE.PointLight(0xff0000, 5, 10);
-  // light.position.set(0, -3, 4);
-  // scene.add(light);
 
-  // scene.add(group);
+  const light = new THREE.PointLight(0xff0000, 5, 10);
+  light.position.set(-10, -3, 4);
+  scene.add(light);
+
 
   const ktx2Loader = new KTX2Loader()
     .setTranscoderPath("/textures/basis/")
     .detectSupport(renderer);
 
+
+  let morphTargetMesh; // Declare the morphTargetMesh variable here
+  
+  const light = new THREE.PointLight(0xff0000, 5, 10);
+  light.position.set(-10, -3, 4); // Adjust the light position to be closer to the model
+  scene.add(light);
+
   new GLTFLoader()
     .setKTX2Loader(ktx2Loader)
     .setMeshoptDecoder(MeshoptDecoder)
-    .load("/facecap.glb", (gltf: any) => {
+    .load("/scene.glb", (gltf: any) => {
       console.log("gltf", gltf);
 
+      gltf.scene.traverse((node: any) => {
+        if (node.isSkinnedMesh && node.name === "neutral") {
+          neutralMesh = node;
+          console.log(node)
+        }
+      });
+      
       const mesh = gltf.scene.children[0];
       scene.add(mesh);
       console.log("mesh", mesh);
 
-      mixer = new THREE.AnimationMixer(mesh);
-      const zeroTrack = new THREE.NumberKeyframeTrack(
-        "mesh_2.morphTargetInfluences",
-        [0, 1],
-        Array.from({ length: 104 }, () => 0)
-      );
-      let zeroClip = new THREE.AnimationClip("blink", -1, [zeroTrack]);
-      mixer.clipAction(zeroClip).play();
 
-      const head = mesh.getObjectByName("mesh_2");
-      const influences = head?.morphTargetInfluences;
+      if (neutralMesh) {
+        // scene.add(neutralMesh)
+        const lightx = new THREE.PointLight(0xff0000, 5, 10);
+        light.position.set(-15, -1, 4);
+        neutralMesh.add(lightx);
+        console.log("neutralMesh", neutralMesh);
+        logMorphTargetNames(neutralMesh);
 
+        const influences = neutralMesh.morphTargetInfluences;
+        const gui = new GUI();
+        gui.close();
+
+        for (const blendshapeName of a2fKeys) {
+          const morphTargetName = blendshapeName;
+          const value = neutralMesh.morphTargetDictionary[morphTargetName];
+
+          if (value !== undefined) {
+            gui
+              .add(influences, value, 0, 1, 0.01)
+              .name(morphTargetName)
+              .listen(influences);
+          }
+        }
+      } else {
+        console.error("Mesh with the provided UUID not found");
+=======
+    new GLTFLoader()
+  .setKTX2Loader(ktx2Loader)
+  .setMeshoptDecoder(MeshoptDecoder)
+  .load("/mocap.glb", (gltf) => {
+    console.log("gltf", gltf);
+
+    const mesh = gltf.scene.children[0];
+    scene.add(mesh);
+    console.log("mesh", mesh);
+
+    let morphTargetMeshes = [];
+
+    gltf.scene.traverse((node) => {
+      if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+        morphTargetMeshes.push(node);
+        console.log(node.name)
+      }
+    });
+    
+    for (const morphTargetMesh of morphTargetMeshes) {
+      const influences = morphTargetMesh.morphTargetInfluences;
       const gui = new GUI();
       gui.close();
-
-      for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
+    
+      for (const [key, value] of Object.entries(morphTargetMesh.morphTargetDictionary)) {
         console.log(key, value);
         gui
           .add(influences, value, 0, 1, 0.01)
           .name(key.replace("blendShape1.", ""))
           .listen(influences);
+
       }
-    });
+    }
+    
+  });
+
+
+  // new GLTFLoader()
+  //   .setKTX2Loader(ktx2Loader)
+  //   .setMeshoptDecoder(MeshoptDecoder)
+  //   .load("/scene.glb", (gltf: any) => {
+  //     console.log("gltf", gltf);
+
+  //     const mesh = gltf.scene.children[0];
+  //     scene.add(mesh);
+  //     console.log("mesh", mesh);
+  //     mixer = new THREE.AnimationMixer(mesh);
+
+  //     // mixer.clipAction(zeroClip).play();
+  //     // GUI
+
+  //     let morphTargetMesh;
+  //     gltf.scene.traverse((node) => {
+  //       if (node.isMesh && node.name.startsWith("LOD0_3_")) {
+  //         morphTargetMesh = node;
+  //       }
+  //     });
+      
+  //           const head = morphTargetMesh;
+  //     const influences = head.morphTargetInfluences;
+  //     const gui = new GUI();
+  //     gui.close();
+
+  //     for (const [key, value] of Object.entries(head.morphTargetDictionary)) {
+  //       console.log(key, value);
+  //       gui
+  //         .add(influences, value, 0, 1, 0.01)
+  //         .name(key.replace("blendShape1.", ""))
+  //         .listen(influences);
+  //     }
+  //   });
 
   const environment = new RoomEnvironment();
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  
+    scene.background = new THREE.Color(0x222222);
+    scene.environment = pmremGenerator.fromScene(environment).texture;
+
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.minDistance = 0.0;
+    controls.maxDistance = 5;
+  
+    controls.target.set(0, 0.15, 0); // Set the OrbitControls target to the model at the center (0, 0, 0)
 
   scene.background = new THREE.Color(0x222222);
   scene.environment = pmremGenerator.fromScene(environment).texture;
 
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.minDistance = 2.5;
-  controls.maxDistance = 100;
-  controls.minAzimuthAngle = -Math.PI / 2;
-  controls.maxAzimuthAngle = Math.PI / 2;
-  controls.maxPolarAngle = Math.PI / 1.8;
-  // controls.target.set(0, 0.15, -0.2);
+
 
   // const stats = new Stats();
   // container.appendChild(stats.dom);
